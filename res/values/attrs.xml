@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <declare-styleable name="Workspace">
+        <attr name="defaultScreen" format="integer"></attr>
+        <attr name="cellCountY" format="integer"></attr>
+    </declare-styleable>
+    
+    <!-- CellLayout每屏的属性 -->
+    <declare-styleable name="CellLayout">
+        <!-- 每个app图标的宽 -->
+        <attr name="cellWidth" format="dimension" />
+        <attr name="cellHeight" format="dimension" />
+    </declare-styleable>
+
+    <!-- XML attributes used by default_workspace.xml -->
+    <declare-styleable name="Favorite">
+        <attr name="className" format="string" />
+        <attr name="packageName" format="string" />
+        <attr name="container" format="string" />
+        <attr name="screen" format="string" />
+        <attr name="x" format="string" />
+        <attr name="y" format="string" />
+        <attr name="spanX" format="string" />
+        <attr name="spanY" format="string" />
+        <attr name="icon" format="reference" />  
+        <attr name="title" format="reference" />
+        <attr name="uri" format="string" />
+    </declare-styleable>
+    
+</resources>

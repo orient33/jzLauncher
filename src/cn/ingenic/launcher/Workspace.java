@@ -21,6 +21,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	public Workspace(Context context, AttributeSet attrs, int def) {
 		super(context, attrs, def);
 		mContext=context;
+		this.setOnHierarchyChangeListener(this);
 	}
 
 	@Override
@@ -67,6 +68,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 			cell.y = i;
 			addView(cell);
 		}
+		super.addMaxPageX();
 	}
 	
 	void addCell(Cell cell){

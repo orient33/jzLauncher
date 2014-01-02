@@ -21,8 +21,7 @@ import android.widget.Scroller;
  * 可以平滑的在水平、竖直方向滑动的ViewGroup、GridLayout；
  * 类似与Launcher的桌面滑动效果。
  * */
-public class PagedViews extends GridLayout implements
-		ViewGroup.OnHierarchyChangeListener {
+public class PagedViews extends GridLayout {
 	static final int PAGE_LEFT = 1, PAGE_TOP = 2, PAGE_RIGHT = 3,
 			PAGE_BOTTOM = 4;
 	static final int SCROLL_DURATION = 1500;// 动画时间
@@ -42,7 +41,7 @@ public class PagedViews extends GridLayout implements
 	int mPageWidth, mPageHeight;
 	int mCurrentPageX = 0, mCurrentPageY = 0;
 	final int mMaxPageY;// row count 01234
-	int mMaxPageX = 5; // column count 01234
+	int mMaxPageX = 0; // column count 01234
 	
 	public PagedViews(Context context) {
 		this(context, null);
@@ -66,7 +65,6 @@ public class PagedViews extends GridLayout implements
 		mMaxPageY = getRowCount();
 		mPageWidth = w;
 		mPageHeight = h - getStatusBarHeight();
-		setOnHierarchyChangeListener(this);
 		mScroller = new Scroller(context);
 
 	}
@@ -127,7 +125,7 @@ public class PagedViews extends GridLayout implements
 			} else if (state == STATE_SCROLLING) {
 				int dx = (int) (mLastMotionX - x);
 				if (getScrollX() < 0
-						|| getScrollX() > getChildAt(getChildCount() - 1)
+						|| getScrollX() > getChildAt(getChildCount() - mMaxPageY)
 								.getLeft()) {
 					dx /= 4;// 越界时,位移减少
 				}
@@ -194,23 +192,6 @@ public class PagedViews extends GridLayout implements
 		}
 	}
 
-	@Override
-	public void onChildViewAdded(View parent, View child) {
-		// child数量改变时，有可能引起 mMaxPageX的改变。故 重新计算
-		int rowSize = mMaxPageY;
-		if(!(child instanceof CellLayout)){
-			log("Error  child must be Celllayout ==============");
-		}
-		mMaxPageX = (getChildCount() + rowSize - 1) / rowSize;
-	}
-
-	@Override
-	public void onChildViewRemoved(View arg0, View arg1) {
-		// child数量改变时，有可能引起 mMaxPageX的改变。故 重新计算
-		int rowSize = mMaxPageY;
-		mMaxPageX = (getChildCount() + rowSize - 1) / rowSize;
-	}
-
 	/**
 	 * 向 (row,column)添加一个child，未测。慎用。
 	 * */
@@ -224,6 +205,11 @@ public class PagedViews extends GridLayout implements
 			for (int i = 1; i < row; i++)
 				addView(v);// :TODO should be null view
 		}
+	}
+	
+	void addMaxPageX(){
+		mMaxPageX++;
+		log("mMaxPageX = "+mMaxPageX);
 	}
 	
 	int getScreenColumnCount(){

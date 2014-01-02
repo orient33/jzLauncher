@@ -117,7 +117,7 @@ public class Launcher extends Activity {
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if(/*keyCode == KeyEvent.KEYCODE_BACK||*/keyCode==KeyEvent.KEYCODE_HOME){
+		if(keyCode == KeyEvent.KEYCODE_BACK||keyCode==KeyEvent.KEYCODE_HOME){
 			DB.log("key BACK/HOME up");
 			mWorkspace.snapToHome();
 			return true;

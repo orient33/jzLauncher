@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- GridLayout
+	其中 android:columnCount="2" 指明 每屏 横向cell的最大个数
+	竖向的 由 AppsDeskManager.CELL_COUNT_X CELL_COUNT_Y指定。
+	CELL_COUNT_X 和 android:columnCount="2" 必须相同，否则计算cell的位置和显示位置会不一致
+	celllayout:cellWidth  指定每个cell的宽度
+	celllayout:cellHeight 指定每个cell的高度
+ -->
 <cn.ingenic.launcher.CellLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:celllayout="http://schemas.android.com/apk/res/cn.ingenic.launcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    
+    celllayout:cellWidth="120px"
+    celllayout:cellHeight="110px"
     android:columnCount="2" >
     
 
