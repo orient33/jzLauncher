@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- LinearLayout -->
+<cn.ingenic.launcher.Cell xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="180dp"
     android:layout_height="180dp"
     android:paddingLeft="20dp"
@@ -20,4 +21,4 @@
         android:gravity="center"
         android:textSize="20sp"/>
 
-</LinearLayout>
+</cn.ingenic.launcher.Cell>

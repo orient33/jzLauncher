@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
@@ -54,15 +56,36 @@ public class Launcher extends Activity {
 				}
 			}.start();
 			mIsFirstLoad = false;
-		} else if (!mInitedUI) {
+		} else/* if (!mInitedUI) */{
 			getProgessDialog().show();
 			new LoadWorkspace().execute(1);
 			mInitedUI = true;
-		}else{
-			;
-		}
+		}/*else{
+			DB.log("not first load . and already init UI");
+		}*/
+		DB.log("on create");
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		DB.log("on resume");
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		DB.log("on pause");
+	}
+	@Override
+	protected void onStop() {
+		super.onStop();
+		DB.log("on stop");
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.dismiss();
+			mProgressDialog = null;
+		}
+	}
 	
 	@Override
 	protected void onDestroy() {
@@ -73,29 +96,6 @@ public class Launcher extends Activity {
 		DB.log("on destroy");
 	}
 
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		DB.log("on pause");
-	}
-
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		DB.log("on resume");
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		DB.log("on stop");
-		if (mProgressDialog != null && mProgressDialog.isShowing()) {
-			mProgressDialog.dismiss();
-			mProgressDialog = null;
-		}
-	}
     @Override
      public boolean dispatchKeyEvent(KeyEvent event) {
          if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -118,13 +118,31 @@ public class Launcher extends Activity {
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if(keyCode == KeyEvent.KEYCODE_BACK||keyCode==KeyEvent.KEYCODE_HOME){
+		if(/*keyCode == KeyEvent.KEYCODE_BACK||*/keyCode==KeyEvent.KEYCODE_HOME){
 			DB.log("key BACK/HOME up");
 			mWorkspace.snapToHome();
 			return true;
 		}
 		return super.onKeyUp(keyCode, event);
 	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.launcher, menu);
+		return true;
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case R.id.action_settings:
+			dump();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 
 	static void runOnMainThreak(Runnable r){
 		sUI.post(r);
@@ -132,6 +150,7 @@ public class Launcher extends Activity {
 	static void runOnWorkThreak(Runnable r){
 		sWorker.post(r);
 	}
+	
 	
 	
 	private Dialog getProgessDialog() {
@@ -161,6 +180,16 @@ public class Launcher extends Activity {
 		}
 	}
 
+	void dump(){
+		int count=mWorkspace.getChildCount();
+		String s="count size :: "+count;
+		for (int i = 0; i < count; i++) {
+			CellLayout c=(CellLayout)mWorkspace.getChildAt(i);
+			s +="\nCL:("+c.x+","+c.y+") childsize"+c.getChildCount();
+		}
+		DB.log("workspace state:\n" + s);
+	}
+	
 	class LoadWorkspace extends AsyncTask<Integer, Void, Void> {
 
 		@Override

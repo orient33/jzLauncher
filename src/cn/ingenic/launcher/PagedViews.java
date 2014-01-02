@@ -72,6 +72,9 @@ public class PagedViews extends GridLayout implements
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		final int action = ev.getAction();
+		if(this.getChildCount()<1){
+			return false;
+		}
 		if (action == MotionEvent.ACTION_MOVE && state != STATE_STATIC) {
 			// MOVE 且 非静止 下，返回true，使事件不传递给子view，而是本View处理(onTouchEent)
 			return true;

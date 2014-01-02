@@ -16,5 +16,7 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
-
+    <!-- Launcher activity theme -->
+    <style name="Theme" parent="@android:style/Theme.Holo.Wallpaper.NoTitleBar">
+	</style>
 </resources>

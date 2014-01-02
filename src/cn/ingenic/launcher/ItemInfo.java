@@ -15,7 +15,7 @@ import android.util.Log;
 
 /**
  * Represents an item in the launcher.
- * 代表桌面上的一个条目：一个app icon或者widget
+ * 代表桌面上的一个条目信息：一个app icon或者widget
  */
 class ItemInfo {
     
@@ -113,7 +113,15 @@ class ItemInfo {
         return "";
     }
 
-
+	/** 屏数 和 celllayout的位置的转化 */
+	static void screenToXY(int screen, int xy[]) {
+		xy[0] = screen % 1000;
+		xy[1] = screen / 1000;
+	}
+	/** 屏数 和 celllayout的位置的转化 */
+	static int xyToScreen(int x, int y) {
+		return x + y * 1000;
+	}
 
     static byte[] flattenBitmap(Bitmap bitmap) {
         // Try go guesstimate how much space the icon will take when serialized

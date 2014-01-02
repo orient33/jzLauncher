@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 
 public class AppsDeskManager {
 	private static AppsDeskManager sInstance;
@@ -89,26 +90,6 @@ public class AppsDeskManager {
 		}
 	}*/
 	
-	synchronized private void addScreen(){
-    	Runnable r = new Runnable(){
-			public void run() {
-				for(int i=0;i<mWorkSpace.mMaxPageY;i++){//依据行数添加屏数
-			    	int screen_x=mWorkSpace.getScreenColumnCount();
-			    	LayoutInflater inflate = LayoutInflater.from(mLauncher);
-		    		CellLayout cell = (CellLayout)inflate.inflate(R.layout.celllayout, null);
-		    		cell.x=screen_x;
-		    		cell.y=i;
-		    		mWorkSpace.addView(cell);
-		    	}
-			}};
-		Launcher.runOnMainThreak(r);
-    	Launcher.SCREEN_COUNT++;
-		SharedPreferences pref = mApp.getSharedPreferences(PREF_APPS_DESK, 0);
-		SharedPreferences.Editor edit = pref.edit();
-		edit.putInt(KEY_SCREEN_COUNT, Launcher.SCREEN_COUNT);
-		edit.commit();
-	}
-
 	ArrayList<ItemInfo> mItems=new ArrayList<ItemInfo>();
 
 	public void initAppsIcon(){
@@ -122,14 +103,22 @@ public class AppsDeskManager {
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> apps = packageManager.queryIntentActivities(mainIntent, 0);
 		log(" query apps size = "+apps.size());
-//		mWorkSpace.removeAllViews();
 		mLauncher.mDB.clearDB();
 		/**计算应用图标需要的屏数目*/
 		int need_screen_count = apps.size() / CELL_COUNT + ((apps.size() % CELL_COUNT == 0) ? 0 : 1);
 		// add screen
-		for (int i = 0; i < need_screen_count + ExtraX_Screen_size; i++) {
-			addScreen();
-		}
+		final int count =need_screen_count + ExtraX_Screen_size;
+		Runnable r = new Runnable(){
+			public void run() {
+				for (int j = 0; j < count; j++)
+					mWorkSpace.addOneColumn(j);
+			}};
+		Launcher.runOnMainThreak(r);
+		Launcher.SCREEN_COUNT += count;
+		SharedPreferences pref = mApp.getSharedPreferences(PREF_APPS_DESK, 0);
+		SharedPreferences.Editor edit = pref.edit();
+		edit.putInt(KEY_SCREEN_COUNT, Launcher.SCREEN_COUNT);
+		edit.commit();
 		//load first screen
 //		mApp.getLauncherProvider().loadDefaultFavorites();
 		
@@ -144,10 +133,10 @@ public class AppsDeskManager {
 
 	public void loadItemsFromDB(){
 		if(mItems.size()==0){
-			log("loadItemsFromDB, but mItems is  empty..");
+			log("loadItemsFromDB, but mItems is  empty..So re-load from DB");
 			mLauncher.mDB.queryFavs(mItems,mApp.getPackageManager());	
 		}
-		log("loadItemsFromDB,  mItems size="+mItems.size());
+		log("loadItemsFromDB, not queryDB, mItems size="+mItems.size());
         addItemsToUI();
 	}
 	
@@ -160,27 +149,22 @@ public class AppsDeskManager {
 				if(mWorkSpace.getChildCount()==0){
 					int count = mItems.size() / CELL_COUNT + ((mItems.size() % CELL_COUNT == 0) ? 0 : 1);
 //					addNeedScreen(count);
-					for (int j = 0; j < count; j++)
-						for (int i = 0; i < mWorkSpace.mMaxPageY; i++) {// 依据行数添加屏数
-							int screen_x = mWorkSpace.getScreenColumnCount();
-							LayoutInflater inflate = LayoutInflater
-									.from(mLauncher);
-							CellLayout cell = (CellLayout) inflate.inflate(
-									R.layout.celllayout, null);
-							cell.x = screen_x;
-							cell.y = i;
-							mWorkSpace.addView(cell);
-						}
-					log("addItemsToUI  child empty, inflate now");
+					for (int j = 0; j < count; j++){
+						mWorkSpace.addOneColumn(j);
+					}
+					log("addItemsToUI 11 child empty, inflate now.workspace size = "+mWorkSpace.getChildCount());
 				}else{
-					log("addItemsToUI  child inited, remove cell form cellLayout now");
-					int childcount=mWorkSpace.getChildCount();
-					for(int i=0;i<childcount;i++)
-						((CellLayout)mWorkSpace.getChildAt(i)).removeAllViews();
+					log("addItemsToUI 22 celllayout size = "+mWorkSpace.getChildCount());
+//					int childcount=mWorkSpace.getChildCount();
+//					for(int i=0;i<childcount;i++)
+//						((CellLayout)mWorkSpace.getChildAt(i)).removeAllViews();
 				}
 				
 				for(ItemInfo ai: mItems){
-					mWorkSpace.addShortcutToScreen(ai);
+					Cell cell = (Cell)View.inflate(mLauncher, R.layout.cell, null);
+					cell.setItemInfo(ai);
+					cell.setIconTitle(ai.icon, ai.title);
+					mWorkSpace.addCell(cell);
 				}
 				mWorkSpace.invalidate();
 				log("add app OVER");
