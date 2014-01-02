@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.GridLayout;
 
 public class CellLayout extends GridLayout implements ViewGroup.OnHierarchyChangeListener {
@@ -92,7 +93,11 @@ public class CellLayout extends GridLayout implements ViewGroup.OnHierarchyChang
 				//检查cell的位置是否已添加
 				DB.log(TAG+"add view. cell x,y is already op");
 			}else{
-				super.addView(child);
+//				ViewGroup.LayoutParams lp=child.getLayoutParams();// is null
+//				DB.log(TAG+"add view. cell w="+child.getMeasuredWidth()+",h="+child.getMeasuredHeight());// both is 0.
+//				DB.log(TAG+"add view. cell w="+child.getWidth()+",h="+child.getHeight());// both is 0.
+				ViewGroup.LayoutParams lp=new ViewGroup.LayoutParams(mCellWidth,mCellHeight);
+				super.addView(child, lp);
 			}
 			
 		}else {

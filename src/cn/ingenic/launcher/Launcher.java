@@ -13,7 +13,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 public class Launcher extends Activity {
 

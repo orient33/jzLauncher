@@ -1,8 +1,11 @@
 /**@author dfdun*/
 package cn.ingenic.launcher;
 
+import java.lang.reflect.Field;
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -55,15 +58,14 @@ public class PagedViews extends GridLayout implements
 		DisplayMetrics dm = res.getDisplayMetrics();
 		final ViewConfiguration conf = ViewConfiguration.get(context);
 		mSlopDistance = conf.getScaledTouchSlop();// 8dp
-
 		state = STATE_STATIC;
 		mCurrentPageX = mCurrentPageY = 0;
-		int h = dm.heightPixels, w = dm.widthPixels;
-		log("(ScreenSize)DisplayMetrics : width=" + w + ", height=" + h);
+		int h = dm.heightPixels/*240*/, w = dm.widthPixels;/*240*/
+		log("(ScreenSize)DisplayMetrics : width=" + w + ", height=" + h );
 
 		mMaxPageY = getRowCount();
 		mPageWidth = w;
-		mPageHeight = h;
+		mPageHeight = h - getStatusBarHeight();
 		setOnHierarchyChangeListener(this);
 		mScroller = new Scroller(context);
 
@@ -232,7 +234,7 @@ public class PagedViews extends GridLayout implements
 	}
 	
 	private void log(String s) {
-		Log.i("sw2df", "[MyGridL..]" + s);
+		Log.i("sw2df", "[PagedViews]" + s);
 	}
 	/**
 	 * 获取页面(pagex,yyyyy)的左边缘、水平位置，
@@ -352,5 +354,24 @@ public class PagedViews extends GridLayout implements
 	private View getCurrentDisplayView() {
 		return getChildAt(mCurrentPageX * mMaxPageY + mCurrentPageY);
 	}
-
+	
+	private int getStatusBarHeight(){
+		Class<?> c = null;
+		Object obj = null;
+		Field field = null;
+		int x = 0, sbar = 0;
+		try {
+		    c = Class.forName("com.android.internal.R$dimen");
+		    obj = c.newInstance();
+		    field = c.getField("status_bar_height");
+		    x = Integer.parseInt(field.get(obj).toString());
+		    sbar = getResources().getDimensionPixelSize(x);
+		    DB.log("get status bar height OK, =="+sbar);
+		    return sbar;
+		} catch (Exception e1) {
+		    DB.log("get status bar height fail");
+		    e1.printStackTrace();
+		} 
+		return 0;
+	}
 }

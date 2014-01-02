@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- LinearLayout -->
+<!--
+ 	LinearLayout 
+ 	Cell这里设置的宽高不起作用，因为 addview()时需要再次指定cell的宽高
+   	但是内部的ImageView TextView 启作用
+-->
 <cn.ingenic.launcher.Cell xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="180dp"
-    android:layout_height="180dp"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     android:orientation="vertical" >
     <ImageView
         android:id="@+id/icon"
         android:contentDescription="@string/app_name"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:scaleType="fitXY"
-        android:padding="20dp"
+        android:scaleType="centerInside"
+        android:layout_gravity="center"
+        android:padding="10dp"
         />
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"/>
 
 </cn.ingenic.launcher.Cell>
