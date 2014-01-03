@@ -48,6 +48,8 @@ public class Clock extends View {
 	public Clock(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 
+		BitmapFactory.Options opt=new BitmapFactory.Options();
+		opt.inDensity=120;
         mBmpHour = BitmapFactory.decodeResource(getResources(),
                 R.drawable.widget_clock_hour_01);
         bmdHour = new BitmapDrawable(mBmpHour);
@@ -61,7 +63,7 @@ public class Clock extends View {
         bmdSecond = new BitmapDrawable(mBmpSecond);
 
         mBmpDial = BitmapFactory.decodeResource(getResources(),
-                R.drawable.clock_01);
+                R.drawable.clock_01,opt);
         bmdDial = new BitmapDrawable(mBmpDial);
         mWidth = mBmpDial.getWidth();
         mHeigh = mBmpDial.getHeight();
