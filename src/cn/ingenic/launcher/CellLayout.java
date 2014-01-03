@@ -28,8 +28,8 @@ public class CellLayout extends GridLayout implements ViewGroup.OnHierarchyChang
 	public CellLayout(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		TypedArray a=context.obtainStyledAttributes(attrs,R.styleable.CellLayout);
-		mCellWidth = a.getDimensionPixelSize(R.styleable.CellLayout_cellWidth, 120);
-		mCellHeight=a.getDimensionPixelSize(R.styleable.CellLayout_cellHeight, 110);
+		mCellWidth = a.getDimensionPixelSize(R.styleable.CellLayout_cellWidth, Utils.CellDefalutWidth);
+		mCellHeight=a.getDimensionPixelSize(R.styleable.CellLayout_cellHeight, Utils.CellDefalutHeight);
 		a.recycle();
 		// A ViewGroup usually does not draw, but CellLayout needs to draw a rectangle
 		// to show the user where a dragged item will land when dropped.

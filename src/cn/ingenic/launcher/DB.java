@@ -84,6 +84,11 @@ public class DB extends SQLiteOpenHelper {
 		}
 	}
 	
+	/** 从DB中获取app信息，并且加载对应icon，放到传来的数组 items中
+	 * 
+	 * @param items 放入app信息的数组，初始长度应为0，调用之后为DB中app个数
+	 * @param pm    PackageManager引用，用于加载icon
+	 * */
 	void queryFavs(ArrayList<ItemInfo> items,PackageManager pm) {
 		SQLiteDatabase d=this.getReadableDatabase();
 		Cursor c=d.query(Table, null, null, null, null, null, null);

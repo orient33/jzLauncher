@@ -34,7 +34,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 		String key = getKeyForCellLayout(cl);
 		if (!mAllCellLayout.containsKey(key))
 			mAllCellLayout.put(key, cl);
-		DB.log("[Workspace] add child. cellLayout=" + key);
+//		DB.log("[Workspace] add child. cellLayout=" + key);
 	}
 
 	@Override

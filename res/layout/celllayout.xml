@@ -5,14 +5,16 @@
 	CELL_COUNT_X 和 android:columnCount="2" 必须相同，否则计算cell的位置和显示位置会不一致
 	celllayout:cellWidth  指定每个cell的宽度
 	celllayout:cellHeight 指定每个cell的高度
+	Google: { px = dp * (dpi / 160) }..
+	For s2122b, dpi=120, screen is 240px*240px, dp is 320dp*320dp
  -->
 <cn.ingenic.launcher.CellLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:celllayout="http://schemas.android.com/apk/res/cn.ingenic.launcher"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     
-    celllayout:cellWidth="120px"
-    celllayout:cellHeight="110px"
+    celllayout:cellWidth="160dp"
+    celllayout:cellHeight="147dp"
     android:columnCount="2" >
     
 

@@ -3,7 +3,10 @@
     package="cn.ingenic.launcher"
     android:versionCode="1"
     android:versionName="1.0" >
-
+<!-- About px ,dp ,dpi
+	Google: { px = dp * (dpi / 160) }..
+	For s2122b, dpi=120, screen is 240px*240px, dp is 320dp*320dp
+ -->
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="18" />

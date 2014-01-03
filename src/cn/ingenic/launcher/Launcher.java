@@ -1,9 +1,12 @@
 package cn.ingenic.launcher;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.app.Application;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,20 +40,22 @@ public class Launcher extends Activity {
 		mSharedPrefs = getSharedPreferences(Utils.PREF, 0);
 		mApp = getApplication();
 		mIsFirstLoad = mSharedPrefs.getBoolean(Utils.KEY_isFirstLoad, true);
-		
-		mDB = new DB(this, "launcher.db", null, 1);
+		final String locale = Locale.getDefault().toString();
+		boolean localeChanged=!locale.equals(mSharedPrefs.getString(Utils.KEY_Locale, " "));
+		mDB = new DB(this, Utils.DB_NAME, null, 1);
 		setContentView(R.layout.launcher);
 		mWorkspace = (Workspace) findViewById(R.id.workspace);
 		findViewById(R.id.layer).setBackground(null);
 		mAppsDeskManager = AppsDeskManager.init(this, mWorkspace);
 
-		if (mIsFirstLoad) {
+		if (mIsFirstLoad || localeChanged) {
 			getProgessDialog().show();
 			new FirstLoad().execute(1);
 			new Thread("SetNoFirstLoad") {
 				public void run() {
 					SharedPreferences.Editor editor = mSharedPrefs.edit();
 					editor.putBoolean(Utils.KEY_isFirstLoad, false);
+					editor.putString(Utils.KEY_Locale, locale);
 					editor.commit();
 				}
 			}.start();
@@ -93,6 +98,7 @@ public class Launcher extends Activity {
 		mWorkspace.removeAllViews();
 		mWorkspace=null;
 		DB.log("on destroy");
+		android.os.Process.killProcess(android.os.Process.myPid());
 	}
 
     @Override
@@ -118,7 +124,7 @@ public class Launcher extends Activity {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK||keyCode==KeyEvent.KEYCODE_HOME){
-			DB.log("key BACK/HOME up");
+			DB.log("key BACK/HOME up,code "+keyCode);
 			mWorkspace.snapToHome();
 			return true;
 		}
@@ -126,7 +132,6 @@ public class Launcher extends Activity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.launcher, menu);
 		return true;
 	}
@@ -136,7 +141,9 @@ public class Launcher extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case R.id.action_settings:
-			dump();
+			Intent i=new Intent(Intent.ACTION_VIEW);
+			i.setClassName("com.android.settings", "com.android.settings.Settings");
+			startActivity(i);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -157,7 +164,7 @@ public class Launcher extends Activity {
 			mProgressDialog = new ProgressDialog(this);
 			mProgressDialog.setCancelable(false);
 			mProgressDialog.setIndeterminate(true);
-			mProgressDialog.setMessage("Loading...");
+			mProgressDialog.setMessage(getString(R.string.loading));
 		}
 		return mProgressDialog;
 	}
@@ -179,16 +186,6 @@ public class Launcher extends Activity {
 		}
 	}
 
-	void dump(){
-		int count=mWorkspace.getChildCount();
-		String s="count size :: "+count;
-		for (int i = 0; i < count; i++) {
-			CellLayout c=(CellLayout)mWorkspace.getChildAt(i);
-			s +="\nCL:("+c.x+","+c.y+") childsize"+c.getChildCount();
-		}
-		DB.log("workspace state:\n" + s);
-	}
-	
 	class LoadWorkspace extends AsyncTask<Integer, Void, Void> {
 
 		@Override

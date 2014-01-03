@@ -11,16 +11,17 @@ import android.graphics.Matrix;
 public class Utils {
 
 	/** shared_pref name*/
-	static final String PREF="launch.xml";
+	static final String PREF="launch.xml";	// 后缀是多余的
 	static final String KEY_isFirstLoad="Is_First_Load";
+	static final String KEY_Locale="Locale";
 	
-	/** DB authority  */
-//	static final String AUTHORITY = "cn.ingenic.launcher.settings";
+	/** DB file name  */
+	static final String DB_NAME = "launcher.db";
 	/** DB tables's name  */
     static final String TABLE_FAVORITES = "favorites";
-//    static final String PARAMETER_NOTIFY = "notify";
 
-    
+    /** 每个app图标的默认宽高，正确设置celllayout，这个不会启作用*/
+	static final int CellDefalutWidth = 120, CellDefalutHeight = 110;
     
     /**  draw a icon on background, For  like MIUI's icon <br>
      *  为app图标添加背景图片，类似小米桌面

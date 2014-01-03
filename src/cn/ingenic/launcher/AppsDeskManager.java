@@ -34,12 +34,7 @@ public class AppsDeskManager {
 	public static final int ExtraX_Screen_size=0;// 0 is Left, 1 is Home page. :TODO
 	
 	private final static String PREF_APPS_DESK = "pref_apps_desk";
-	private final static String KEY_HAS_INIT = "has_init";
 	private final static String KEY_SCREEN_COUNT = "screen_count";
-	
-	private final static int ADDSCREEN=0x111;
-	
-	private Object lock = new Object();
 	
 	private Application mApp;
 	private Launcher mLauncher;
@@ -93,11 +88,6 @@ public class AppsDeskManager {
 	ArrayList<ItemInfo> mItems=new ArrayList<ItemInfo>();
 
 	public void initAppsIcon(){
-		if(hasInited()){
-			log(" has inited! return!");
-			return;
-		}
-		
 		final PackageManager packageManager = mApp.getPackageManager();
 		final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -128,7 +118,6 @@ public class AppsDeskManager {
         }
         addItemsToUI();
 		/*mWorkSpace.initAllAppInfo(apps);*/
-		setInited();
 	}
 
 	public void loadItemsFromDB(){
@@ -136,7 +125,7 @@ public class AppsDeskManager {
 			log("loadItemsFromDB, but mItems is  empty..So re-load from DB");
 			mLauncher.mDB.queryFavs(mItems,mApp.getPackageManager());	
 		}
-		log("loadItemsFromDB, not queryDB, mItems size="+mItems.size());
+		log("loadItemsFromDB, mItems size="+mItems.size());
         addItemsToUI();
 	}
 	
@@ -155,9 +144,6 @@ public class AppsDeskManager {
 					log("addItemsToUI 11 child empty, inflate now.workspace size = "+mWorkSpace.getChildCount());
 				}else{
 					log("addItemsToUI 22 celllayout size = "+mWorkSpace.getChildCount());
-//					int childcount=mWorkSpace.getChildCount();
-//					for(int i=0;i<childcount;i++)
-//						((CellLayout)mWorkSpace.getChildAt(i)).removeAllViews();
 				}
 				
 				for(ItemInfo ai: mItems){
@@ -224,20 +210,6 @@ public class AppsDeskManager {
         } else {
             mLauncher.mDB.insertToDB(cv);
         }
-	}
-	
-	private boolean hasInited(){
-		boolean res = false;
-		SharedPreferences pref = mApp.getSharedPreferences(PREF_APPS_DESK, 0);
-		res = pref.getBoolean(KEY_HAS_INIT, false);
-		return res;
-	}
-	
-	private void setInited(){
-		SharedPreferences pref = mApp.getSharedPreferences(PREF_APPS_DESK, 0);
-		SharedPreferences.Editor edit = pref.edit();
-		edit.putBoolean(KEY_HAS_INIT, true);
-		edit.commit();
 	}
 	
 	private void log(String log){
