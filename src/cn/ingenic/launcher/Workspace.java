@@ -13,6 +13,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	 * 保存这个workspace的所有子View，的索引、*/
 	static HashMap<String, CellLayout> mAllCellLayout=new HashMap<String, CellLayout>(); 
 	Context mContext;
+	static int homeX = 2, homeY = 0;
 	
 	public Workspace(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -47,7 +48,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	}
 
 	void snapToHome() {
-		super.smoothScrollToPage(0, 0);// :TODO
+		smoothScrollToPage(homeX, homeY);
 	}
 
 	@Override

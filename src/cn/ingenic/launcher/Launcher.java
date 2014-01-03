@@ -169,20 +169,20 @@ public class Launcher extends Activity {
 		return mProgressDialog;
 	}
 	class FirstLoad extends AsyncTask<Integer, Void, Void>{
-		long timer;
 		@Override
 		protected Void doInBackground(Integer... params) {
-			timer=System.currentTimeMillis();
+			long timer=System.currentTimeMillis();
 			//初始化workspace，加载所有应用信息到DB
 			mAppsDeskManager.initAppsIcon();
+			timer=System.currentTimeMillis()-timer;
+			DB.log("[Launcher]task FirstLoad use time = "+timer);
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
 			getProgessDialog().hide();
-			timer=System.currentTimeMillis()-timer;
-			DB.log("[Launcher]task FirstLoad use time = "+timer);
+			mWorkspace.snapToHome();
 		}
 	}
 
@@ -200,6 +200,7 @@ public class Launcher extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			getProgessDialog().hide();
+			mWorkspace.snapToHome();
 		}
 	}
 }

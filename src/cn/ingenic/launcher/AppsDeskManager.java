@@ -31,7 +31,7 @@ public class AppsDeskManager {
 	public static int DEFAULT_PAGE = 1;
 	public static final int AppScreenStartX=2;//横向第三屏开始为app,前两屏为 Left,Home屏
 	public static final int AppScreenStartY=0;//竖向第一屏开始为app
-	public static final int ExtraX_Screen_size=0;// 0 is Left, 1 is Home page. :TODO
+	public static final int ExtraX_Screen_size=2;// 0 is Left, 1 is Home page. 
 	
 	private final static String PREF_APPS_DESK = "pref_apps_desk";
 	private final static String KEY_SCREEN_COUNT = "screen_count";
@@ -179,9 +179,11 @@ public class AppsDeskManager {
 	    String title = (String) info.loadLabel(pm);
 	    log(" app title : "+title);
 		Intent intent = getLaunchIntent(info, ii);
-	    int screen = i / CELL_COUNT,cellX=i % CELL_COUNT % CELL_COUNT_X,cellY=i % CELL_COUNT / CELL_COUNT_X;
+		int screen = ExtraX_Screen_size + i / CELL_COUNT, //计入额外的屏,home屏,left屏
+				cellX = i % CELL_COUNT % CELL_COUNT_X,
+				cellY = i % CELL_COUNT / CELL_COUNT_X;
 	    cv.put(DB.Favorites.TITLE, title);
-	    cv.put(DB.Favorites.SCREEN, screen);//:TODO +ExtraX_Screen_size  以给HOME等屏留空间
+	    cv.put(DB.Favorites.SCREEN, screen);
 	    cv.put(DB.Favorites.INTENT, intent.toString());
 	    cv.put(DB.Favorites.CELLX, cellX);
 	    cv.put(DB.Favorites.CELLY, cellY);

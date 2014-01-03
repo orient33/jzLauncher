@@ -298,7 +298,12 @@ public class PagedViews extends GridLayout {
 				log("[ERROR]this is not normal. dx == 0 && dy == 0");
 				return;
 			}
-
+		} else if (pagex != mCurrentPageX && pagey != mCurrentPageY) {
+			mCurrentPageX = pagex;
+			mCurrentPageY = pagey;
+			int x = getScrollXByPage(pagex), y = getScrollYByPage(pagey);
+			int dx = x - startx, dy = y - starty;
+			mScroller.startScroll(startx, starty, dx, dy, duration);
 		} else if (pagex != mCurrentPageX) {
 			mCurrentPageX = pagex;
 			int x = getScrollXByPage(pagex);
