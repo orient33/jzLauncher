@@ -60,13 +60,14 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	/** 根据行数，添加一列的屏 
 	 * @param col 列的索引值 */
 	void addOneColumn(int col){
-		DB.log("add column : "+col);
+		DB.log("add column : "+col+",w="+mPageWidth+",h="+mPageHeight);
 		for (int i = 0; i < mMaxPageY; i++) {// 依据行数添加屏数
 			CellLayout cell = (CellLayout) View.inflate(mContext,
 					R.layout.celllayout, null);
 			cell.x = col;
 			cell.y = i;
-			addView(cell);
+			ViewGroup.LayoutParams lp=new ViewGroup.LayoutParams(mPageWidth, mPageHeight);
+			addView(cell,lp);
 		}
 		super.addMaxPageX();
 	}

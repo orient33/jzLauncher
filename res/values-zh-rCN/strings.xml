@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">JZ启动器</string>
+    <string name="app_name">JZ桌面</string>
     <string name="action_settings">系统设置</string>
 	<string name="loading">正在加载</string>
 </resources>

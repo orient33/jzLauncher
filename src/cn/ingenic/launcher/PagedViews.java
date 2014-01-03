@@ -68,6 +68,15 @@ public class PagedViews extends GridLayout {
 		mScroller = new Scroller(context);
 
 	}
+	@Override
+	protected void onLayout(boolean changed, int l, int t, int r, int b){
+		int count = getChildCount();
+		for (int i = 0; i < count; i++) {
+			CellLayout child=(CellLayout)getChildAt(i);
+			int ll = child.x*mPageWidth, tt = child.y*mPageHeight;
+			child.layout(ll, tt, ll+mPageWidth, tt+mPageHeight);
+		}
+	}
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
