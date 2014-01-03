@@ -38,7 +38,7 @@ public class PagedViews extends GridLayout {
 	private int mSlopDistance;// 滑动中拖动的最小像素
 	private int state = STATE_STATIC;// 当前的状态, 是否在滚动...
 
-	int mPageWidth, mPageHeight;
+	public static int mPageWidth, mPageHeight;
 	int mCurrentPageX = 0, mCurrentPageY = 0;
 	final int mMaxPageY;// row count 01234
 	int mMaxPageX = 0; // column count 01234

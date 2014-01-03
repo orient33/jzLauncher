@@ -182,7 +182,7 @@ public class Launcher extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			getProgessDialog().hide();
-			mWorkspace.snapToHome();
+			mWorkspace.initToHome();
 		}
 	}
 
@@ -200,7 +200,7 @@ public class Launcher extends Activity {
 		@Override
 		protected void onPostExecute(Void result) {
 			getProgessDialog().hide();
-			mWorkspace.snapToHome();
+			mWorkspace.initToHome();
 		}
 	}
 }

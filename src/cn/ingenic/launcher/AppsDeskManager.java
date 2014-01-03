@@ -136,8 +136,9 @@ public class AppsDeskManager {
 			public void run() {
 				
 				if(mWorkSpace.getChildCount()==0){
-					int count = mItems.size() / CELL_COUNT + ((mItems.size() % CELL_COUNT == 0) ? 0 : 1);
-//					addNeedScreen(count);
+					int count = mItems.size() / CELL_COUNT
+							+ ((mItems.size() % CELL_COUNT == 0) ? 0 : 1)
+							+ ExtraX_Screen_size;
 					for (int j = 0; j < count; j++){
 						mWorkSpace.addOneColumn(j);
 					}
@@ -177,7 +178,7 @@ public class AppsDeskManager {
 	    ContentValues cv=new ContentValues(14);
 	    ItemInfo ii = new ItemInfo();
 	    String title = (String) info.loadLabel(pm);
-	    log(" app title : "+title);
+//	    log(" app title : "+title);
 		Intent intent = getLaunchIntent(info, ii);
 		int screen = ExtraX_Screen_size + i / CELL_COUNT, //计入额外的屏,home屏,left屏
 				cellX = i % CELL_COUNT % CELL_COUNT_X,

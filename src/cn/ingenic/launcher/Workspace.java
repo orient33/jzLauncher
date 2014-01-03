@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import cn.ingenic.launcher.home.Clock;
 
 public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChangeListener {
 	private static final String TAG="[workspace]";
@@ -13,7 +14,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	 * 保存这个workspace的所有子View，的索引、*/
 	static HashMap<String, CellLayout> mAllCellLayout=new HashMap<String, CellLayout>(); 
 	Context mContext;
-	static int homeX = 2, homeY = 0;
+	static int homeX = 1, homeY = 0;
 	
 	public Workspace(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
@@ -50,6 +51,9 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	void snapToHome() {
 		smoothScrollToPage(homeX, homeY);
 	}
+	void initToHome(){
+		scrollTo(homeX*mPageWidth,homeY*mPageHeight);
+	}
 
 	@Override
 	public void addView(View child) {
@@ -61,13 +65,18 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	/** 根据行数，添加一列的屏 
 	 * @param col 列的索引值 */
 	void addOneColumn(int col){
-		DB.log("add column : "+col+",w="+mPageWidth+",h="+mPageHeight);
+//		DB.log("add column : "+col+",w="+mPageWidth+",h="+mPageHeight);
 		for (int i = 0; i < mMaxPageY; i++) {// 依据行数添加屏数
+			ViewGroup.LayoutParams lp=new ViewGroup.LayoutParams(mPageWidth, mPageHeight);
+			
 			CellLayout cell = (CellLayout) View.inflate(mContext,
 					R.layout.celllayout, null);
 			cell.x = col;
 			cell.y = i;
-			ViewGroup.LayoutParams lp=new ViewGroup.LayoutParams(mPageWidth, mPageHeight);
+			if (homeX == col && homeY == i) {
+				Clock clock = (Clock)View.inflate(mContext, R.layout.home_colck, null);
+				cell.addView(clock, lp);
+			}
 			addView(cell,lp);
 		}
 		super.addMaxPageX();
@@ -80,8 +89,8 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 		else
 			DB.log(TAG+" celllayout in not enough for cell: "+cell);
 		if(cl !=null){
-			DB.log(TAG+"add " + " cell x=" + cl.x + ",y=" + cl.y + " ; "
-					+ cell.mItemInfo.title);
+//			DB.log(TAG+"add " + " cell x=" + cl.x + ",y=" + cl.y + " ; "
+//					+ cell.mItemInfo.title);
 			cl.addView(cell);
 		}
 	}

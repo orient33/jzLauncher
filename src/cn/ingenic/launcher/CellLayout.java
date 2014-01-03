@@ -2,6 +2,8 @@ package cn.ingenic.launcher;
 
 import java.util.HashMap;
 
+import cn.ingenic.launcher.home.Clock;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -45,7 +47,12 @@ public class CellLayout extends GridLayout implements ViewGroup.OnHierarchyChang
 			if(child instanceof Cell){
 				Cell c = (Cell)child;
 				int ll=c.mItemInfo.cellX * mCellWidth,tt=c.mItemInfo.cellY * mCellHeight;
-				c.layout(ll, tt, ll+mCellWidth, tt+mCellHeight);
+				int spanx=mCellWidth*c.mItemInfo.spanX,spany=mCellHeight*c.mItemInfo.spanY;
+				c.layout(ll, tt, ll+spanx, tt+spany);
+			}else if(child instanceof Clock){
+				int w=mCellWidth * AppsDeskManager.CELL_COUNT_X,h=
+						mCellHeight * AppsDeskManager.CELL_COUNT_Y;
+				child.layout(0, 0, w, h);
 			}
 		}
 	}

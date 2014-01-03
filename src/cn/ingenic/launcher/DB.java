@@ -124,7 +124,7 @@ public class DB extends SQLiteOpenHelper {
 		d.close();
 	}
 
-	static void log(String msg){
+	public static void log(String msg){
 		Log.d("sw2df", msg);
 	}
 }
