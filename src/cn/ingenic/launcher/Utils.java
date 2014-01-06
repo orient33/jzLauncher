@@ -44,10 +44,10 @@ public class Utils {
      * @param src  the bitmap need to resize
      * @param b   if b > 1 ,larger ,if(b<1) littler
      * */
-    public static Bitmap scaleBitmap(Bitmap src ,float b){
+    public static Bitmap scaleBitmap(Bitmap src ,float sx ,float sy){
         int width = src.getWidth(), height=src.getHeight();
         Matrix m = new Matrix();
-        m.postScale(b, b);
+        m.postScale(sx, sy);
         return Bitmap.createBitmap(src, 0, 0, width, height, m, true);
     }
 }

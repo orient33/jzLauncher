@@ -1,8 +1,5 @@
 package cn.ingenic.launcher.home;
 
-import java.util.Calendar;
-import java.util.TimeZone;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,21 +12,21 @@ import android.os.Message;
 import android.text.format.Time;
 import android.util.AttributeSet;
 import android.view.View;
-import cn.ingenic.launcher.DB;
 import cn.ingenic.launcher.PagedViews;
 import cn.ingenic.launcher.R;
+import cn.ingenic.launcher.Utils;
 
 public class Clock extends View {
-	  //时钟盘，分针、秒针、时针对象
-	final Bitmap mBmpDial, mBmpHour, mBmpMinute, mBmpSecond;
-
+	//时钟盘，分针、秒针、时针对象
+	Bitmap mBmpDial;
+	final Bitmap mBmpHour, mBmpMinute, mBmpSecond;
     final BitmapDrawable bmdHour, bmdMinute, bmdSecond, bmdDial;
 
     Paint mPaint;
 
-	final int mWidth, mHeigh;
-	final int centerX, centerY;
-	final int availableWidth, availableHeight;
+	final int mWidth, mHeigh; 		//时钟盘的宽高
+	final int centerX, centerY;		//中心位置
+	final int availableWidth, availableHeight;	//可用的宽高
 	int mTempWidth, mTempHeigh;
 
     Time mt=new Time();
@@ -47,9 +44,9 @@ public class Clock extends View {
 	}
 	public Clock(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-
+		
 		BitmapFactory.Options opt=new BitmapFactory.Options();
-		opt.inDensity=120;
+		opt.inDensity = context.getResources().getDisplayMetrics().densityDpi;
         mBmpHour = BitmapFactory.decodeResource(getResources(),
                 R.drawable.widget_clock_hour_01);
         bmdHour = new BitmapDrawable(mBmpHour);
@@ -64,12 +61,15 @@ public class Clock extends View {
 
         mBmpDial = BitmapFactory.decodeResource(getResources(),
                 R.drawable.clock_01,opt);
+        int w = mBmpDial.getWidth(),h = mBmpDial.getHeight();
+		availableWidth = PagedViews.mPageWidth;
+		availableHeight = PagedViews.mPageHeight;
+		if (w != availableWidth || h != availableHeight) {
+			mBmpDial = Utils.scaleBitmap(mBmpDial, availableWidth / (float) w, availableHeight / (float) h);
+		}
+		mWidth = mBmpDial.getWidth();
+	    mHeigh = mBmpDial.getHeight();
         bmdDial = new BitmapDrawable(mBmpDial);
-        mWidth = mBmpDial.getWidth();
-        mHeigh = mBmpDial.getHeight();
-        DB.log("clock w="+mWidth+", h=="+mHeigh);
-        availableWidth=PagedViews.mPageWidth;
-        availableHeight=PagedViews.mPageHeight;
         centerX = availableWidth / 2;
         centerY = availableHeight / 2;
 
