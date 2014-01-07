@@ -10,15 +10,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 public class AppsDeskManager {
 	private static AppsDeskManager sInstance;
@@ -39,12 +34,13 @@ public class AppsDeskManager {
 	private Application mApp;
 	private Launcher mLauncher;
 	private Workspace mWorkSpace;
+	private PackageManager mPm;
 	
 	private AppsDeskManager(Launcher launcher, Workspace workspace){
 		mLauncher = launcher;
 		mApp = mLauncher.getApplication();
 		mWorkSpace = workspace;
-		
+		mPm = launcher.getPackageManager();
 //		loadConfig();
 	}
 	
@@ -52,6 +48,9 @@ public class AppsDeskManager {
 		if(sInstance == null){
 			sInstance = new AppsDeskManager(launcher, workspace);
 		}
+		return sInstance;
+	}
+	public static AppsDeskManager getInstance(){
 		return sInstance;
 	}
 	
@@ -86,12 +85,14 @@ public class AppsDeskManager {
 	}*/
 	
 	ArrayList<ItemInfo> mItems=new ArrayList<ItemInfo>();
-
-	public void initAppsIcon(){
-		final PackageManager packageManager = mApp.getPackageManager();
+	private List<ResolveInfo> queryAllApp(){
 		final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> apps = packageManager.queryIntentActivities(mainIntent, 0);
+        return mPm.queryIntentActivities(mainIntent, 0);
+	}
+	
+	public void initAppsIcon(){
+        List<ResolveInfo> apps = queryAllApp();
 		log(" query apps size = "+apps.size());
 		mLauncher.mDB.clearDB();
 		/**计算应用图标需要的屏数目*/
@@ -123,7 +124,7 @@ public class AppsDeskManager {
 	public void loadItemsFromDB(){
 		if(mItems.size()==0){
 			log("loadItemsFromDB, but mItems is  empty..So re-load from DB");
-			mLauncher.mDB.queryFavs(mItems,mApp.getPackageManager());	
+			mLauncher.mDB.queryFavs(mItems, mPm);	
 		}
 		log("loadItemsFromDB, mItems size="+mItems.size());
         addItemsToUI();
@@ -148,15 +149,21 @@ public class AppsDeskManager {
 				}
 				
 				for(ItemInfo ai: mItems){
-					Cell cell = (Cell)View.inflate(mLauncher, R.layout.cell, null);
-					cell.setItemInfo(ai);
-					cell.setIconTitle(ai.icon, ai.title);
+					Cell cell = ItemInfo2Cell(ai);
 					mWorkSpace.addCell(cell);
 				}
 				mWorkSpace.invalidate();
 				log("add app OVER");
 			}};
 		Launcher.runOnMainThreak(r);
+	}
+
+	/**根据ItemInfo初始化一个Cell实例并返回*/
+	private Cell ItemInfo2Cell(ItemInfo ii) {
+		Cell cell = (Cell) View.inflate(mLauncher, R.layout.cell, null);
+		cell.setItemInfo(ii);
+		cell.setIconTitle(ii.icon, ii.title);
+		return cell;
 	}
 	
 	private Intent getLaunchIntent(ResolveInfo reInfo,ItemInfo ii){
@@ -174,20 +181,26 @@ public class AppsDeskManager {
 	}
 	
 	private void addAppsInfoFromRI(ResolveInfo info,int i){
-		final PackageManager pm = mApp.getPackageManager();
-	    ContentValues cv=new ContentValues(14);
-	    ItemInfo ii = new ItemInfo();
-	    String title = (String) info.loadLabel(pm);
-//	    log(" app title : "+title);
-		Intent intent = getLaunchIntent(info, ii);
 		int screen = ExtraX_Screen_size + i / CELL_COUNT, //计入额外的屏,home屏,left屏
 				cellX = i % CELL_COUNT % CELL_COUNT_X,
 				cellY = i % CELL_COUNT / CELL_COUNT_X;
+		ResolveInfo2ItemInfo(info,screen,cellX,cellY,null);
+	}
+	
+	/**根据ResolveInfo、screen、x、y封装一个ItemInfo，添加到mItems
+	 * 若不是初始时，还需添加对应app icon到相应屏
+	 * */
+	private void ResolveInfo2ItemInfo(ResolveInfo info ,int screen,int x,int y,CellLayout cl){
+		final PackageManager pm = mPm;
+	    ContentValues cv=new ContentValues(14);
+	    ItemInfo ii = new ItemInfo();
+	    String title = (String) info.loadLabel(pm);
+		Intent intent = getLaunchIntent(info, ii);
 	    cv.put(DB.Favorites.TITLE, title);
 	    cv.put(DB.Favorites.SCREEN, screen);
 	    cv.put(DB.Favorites.INTENT, intent.toString());
-	    cv.put(DB.Favorites.CELLX, cellX);
-	    cv.put(DB.Favorites.CELLY, cellY);
+	    cv.put(DB.Favorites.CELLX, x);
+	    cv.put(DB.Favorites.CELLY, y);
 	    cv.put(DB.Favorites.PACKAGENAME, info.activityInfo.packageName);
 	    cv.put(DB.Favorites.ACTIVITYNAME, info.activityInfo.name);
 	    cv.put(DB.Favorites.URI, intent.toUri(0));
@@ -199,20 +212,69 @@ public class AppsDeskManager {
 		ii.title = title;
 		ii.packageName = info.activityInfo.packageName;
 		ii.icon = icon;
-		ii.cellX = cellX;
-		ii.cellY = cellY;
+		ii.cellX = x;
+		ii.cellY = y;
 		ii.intent = intent;
         mItems.add(ii);
-		addShortcutToDb(cv, i);
+		if (cl != null) // 若不是初始化的时候(新安装apk)，需要添加Cell到对应屏
+			addCellToCL(cl,ii);
+		addShortcutToDb(cv);
+	}
+	private void addCellToCL(final CellLayout cl,ItemInfo ii){
+		final Cell cell = ItemInfo2Cell(ii);
+		Runnable r = new Runnable(){
+			public void run() {
+				cl.snapToThis();
+				cl.addView(cell);
+			}
+		};
+		Launcher.runOnMainThreak(r);
+	} 
+	
+	private void addShortcutToDb(ContentValues cv){
+            mLauncher.mDB.insertToDB(cv);
 	}
 	
-	private void addShortcutToDb(ContentValues cv, int i){
-        if (i < 0) {
-/*            InstallShortcutReceiver.addShortcut(data);
-            InstallShortcutReceiver.flushInstallQueue(mApp);*/
-        } else {
-            mLauncher.mDB.insertToDB(cv);
-        }
+	/**新安装 卸载了 更新了 应用
+	 * @param packageNames 卸载的应用的包名
+	 * @param op  操作类型 {@link #cn.ingenic.launcher.appchanged.AppInstallReceiver}
+	 * */
+	public void appChanged(String[] packageNames, int op) {
+		if(op==2)
+		logP("op:"+op,packageNames);
+		mLauncher.appChanged(packageNames, op);
+	}
+	
+	static void deleteForPackage(String packageName){
+		if(sInstance!=null){
+			sInstance.mLauncher.mDB.deleteForPackage(packageName);
+		}
+	}
+	/**检索出packageName为pn的信息，并结合screen,x,y组装成ItemInfo
+	 * 并封装成Cell，然后添加到对应屏;同时插入DB一条对应信息
+	 * @param pn 检索的包名
+	 * @param screen 可添加的screen
+	 * @param x 屏的横坐标 
+	 * @param y 屏的竖坐标
+	 * */
+	static void addForPackage(CellLayout cl,String pn, int screen, int x, int y) {
+		if (sInstance == null)
+			return;
+		 List<ResolveInfo> apps = sInstance.queryAllApp();
+		 for(ResolveInfo ri : apps){
+			 if(pn.equals(ri.activityInfo.packageName)){
+				 sInstance.ResolveInfo2ItemInfo(ri,screen,x,y,cl);
+				 break;//:TODO 若一个app中含多个launch的activity，需另处理
+			 }
+		 }
+	}
+
+	private void logP(String op,String[] packageNames){
+		int N = packageNames.length;
+		String log="";
+		for(int i=0;i<N;i++)
+			log += packageNames[i];
+		Toast.makeText(mApp, op+ " update apk\n"+log, Toast.LENGTH_LONG).show();
 	}
 	
 	private void log(String log){

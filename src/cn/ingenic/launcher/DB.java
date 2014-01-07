@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -122,6 +123,18 @@ public class DB extends SQLiteOpenHelper {
 		SQLiteDatabase d=this.getWritableDatabase();
 		d.insert(Table, null, cv);
 		d.close();
+	}
+	
+	/** 删除table 中对应包名的条目
+	 * */
+	void deleteForPackage(String packageName){
+		String s=" delete from "+Table+" where "+Favorites.PACKAGENAME+"= '"+packageName +"'";
+		SQLiteDatabase d=getWritableDatabase();
+		try {
+			d.execSQL(s);
+		} catch (SQLException e) {
+			log("DB] "+e.toString());
+		}
 	}
 
 	public static void log(String msg){

@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -93,12 +92,6 @@ public class PagedViews extends GridLayout {
 		case MotionEvent.ACTION_DOWN:
 			mLastMotionX = x;
 			mLastMotionY = y;
-			state = STATE_STATIC;
-			final int xDist=Math.abs(mScroller.getFinalX()-mScroller.getCurrX());
-			final int yDist=Math.abs(mScroller.getFinalY()-mScroller.getCurrY());
-			if(mScroller.isFinished()||xDist<mSlopDistance||yDist<mSlopDistance){
-				mScroller.abortAnimation();
-			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (state == STATE_STATIC) {

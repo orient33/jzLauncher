@@ -1,7 +1,6 @@
 package cn.ingenic.launcher;
 
 import java.util.Locale;
-
 import android.app.Activity;
 import android.app.Application;
 import android.app.Dialog;
@@ -34,6 +33,8 @@ public class Launcher extends Activity {
 	Workspace mWorkspace;
 	DB mDB;
 	AppsDeskManager mAppsDeskManager;
+	boolean mPaused,mOnResumeNeedLoad;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -46,6 +47,7 @@ public class Launcher extends Activity {
 		setContentView(R.layout.launcher);
 		mWorkspace = (Workspace) findViewById(R.id.workspace);
 		findViewById(R.id.layer).setBackground(null);
+		mWorkspace.setLauncher(this);
 		mAppsDeskManager = AppsDeskManager.init(this, mWorkspace);
 
 		if (mIsFirstLoad || localeChanged) {
@@ -148,12 +150,22 @@ public class Launcher extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	public void setLoadOnResume(){
+		if(mPaused){
+			mOnResumeNeedLoad = true;
+		}
+	}
 
+	void appChanged(String[] packageNames, int op) {
+		setLoadOnResume();
+		if (mWorkspace != null)
+			mWorkspace.appChanged(packageNames, op);
+	}
 
 	static void runOnMainThreak(Runnable r){
 		sUI.post(r);
 	}
-	static void runOnWorkThreak(Runnable r){
+	public static void runOnWorkThreak(Runnable r){
 		sWorker.post(r);
 	}
 	
