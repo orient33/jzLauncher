@@ -108,8 +108,6 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 		for (int p = 0; p < packageNames.length; p++){
 			boolean done = false;
 			for (int i = 0; i < N; i++) {
-				if (done)	//	若已正确处理 packageName[p]，则退出这层
-					break;
 				CellLayout cl = (CellLayout) getChildAt(i);
 				switch (op) {
 				case AppInstallReceiver.OP_add:
@@ -117,13 +115,18 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 						done = true;
 					break;
 				case AppInstallReceiver.OP_remove:
-					if(cl.removeCellForPackage(packageNames[p]))
-						done = true;
+					//即便删除了一个，也需要继续搜索(有些app含多个launch)
+					cl.removeCellForPackage(packageNames[p]);
 					break;
 				case AppInstallReceiver.OP_update:
 					if (cl.updateCellForPackage(packageNames[p]))
 						done = true;
 					break;
+				}
+				if (done)	//	若已正确处理 packageName[p]，则退出这层
+					break;
+				else if (op == AppInstallReceiver.OP_add) {
+					//若未成功添加app，说明屏数不够，需要添加一列新屏再添加app
 				}
 			}
 		}
