@@ -6,10 +6,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import cn.ingenic.launcher.appchange.AppInstallReceiver;
 import cn.ingenic.launcher.home.Clock;
 
-public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChangeListener {
+public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChangeListener,
+	View.OnLongClickListener{
 	private static final String TAG="[workspace]";
 	/** String is cellLayout index ,eg 1-0 is (1,0)Screen 
 	 * 保存这个workspace的所有子View，的索引、*/
@@ -35,6 +37,7 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 					"Workspace only has CellLayout children");
 		CellLayout cl = (CellLayout) child;
 		cl.setClickable(true);
+		cl.setOnLongClickListener(this);
 		String key = getKeyForCellLayout(cl);
 		if (!mAllCellLayout.containsKey(key))
 			mAllCellLayout.put(key, cl);
@@ -137,6 +140,16 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 
 	private String getKeyForCellLayout(CellLayout cl) {
 		return cl.x + "-" + cl.y;
+	}
+
+	@Override
+	public boolean onLongClick(View v) {
+		if(v instanceof CellLayout){
+			mLauncher.startSetWallpaper();
+			return true;
+		}
+		Toast.makeText(mContext, "longClick : "+v.toString(), 0).show();
+		return false;
 	}
 
 }

@@ -3,5 +3,7 @@
 
     <string name="app_name">JzLaunch</string>
     <string name="action_settings">Settings</string>
-<string name="loading"> loading </string>
+	<string name="loading"> loading </string>
+ 	<string name="wallpaper_instructions">Set wallpaper</string>
+
 </resources>

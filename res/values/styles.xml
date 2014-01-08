@@ -19,4 +19,8 @@
     <!-- Launcher activity theme -->
     <style name="Theme" parent="@android:style/Theme.Holo.Wallpaper.NoTitleBar">
 	</style>
+	
+    <style name="Theme.WallpaperPicker">
+        <item name="android:screenOrientation">nosensor</item>
+    </style>
 </resources>

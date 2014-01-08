@@ -4,4 +4,5 @@
     <string name="app_name">JZ桌面</string>
     <string name="action_settings">系统设置</string>
 	<string name="loading">正在加载</string>
+	<string name="wallpaper_instructions">设为壁纸</string>
 </resources>

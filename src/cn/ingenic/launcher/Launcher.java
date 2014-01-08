@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 public class Launcher extends Activity {
-
+	static String TAG = "[Launcher]";
 	static int SCREEN_COUNT = 0;//screen的列数
 	boolean mIsFirstLoad;
 	boolean mInitedUI;
@@ -33,7 +33,6 @@ public class Launcher extends Activity {
 	Workspace mWorkspace;
 	DB mDB;
 	AppsDeskManager mAppsDeskManager;
-	boolean mPaused,mOnResumeNeedLoad;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -150,14 +149,14 @@ public class Launcher extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	public void setLoadOnResume(){
-		if(mPaused){
-			mOnResumeNeedLoad = true;
-		}
-	}
+
+	public void startSetWallpaper() {
+		final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
+		Intent chooser = Intent.createChooser(pickWallpaper, "Set WallPaper");
+		startActivityForResult(chooser, 10);
+    }
 
 	void appChanged(String[] packageNames, int op) {
-		setLoadOnResume();
 		if (mWorkspace != null)
 			mWorkspace.appChanged(packageNames, op);
 	}
@@ -215,4 +214,5 @@ public class Launcher extends Activity {
 			mWorkspace.initToHome();
 		}
 	}
+
 }
