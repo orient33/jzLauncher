@@ -104,9 +104,9 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 	}
 
 	void appChanged(String[] packageNames,int op) {
-		int N = getChildCount();
 		for (int p = 0; p < packageNames.length; p++){
 			boolean done = false;
+			int N = getChildCount();
 			for (int i = 0; i < N; i++) {
 				CellLayout cl = (CellLayout) getChildAt(i);
 				switch (op) {
@@ -123,11 +123,14 @@ public class Workspace extends PagedViews implements ViewGroup.OnHierarchyChange
 						done = true;
 					break;
 				}
-				if (done)	//	若已正确处理 packageName[p]，则退出这层
-					break;
-				else if (op == AppInstallReceiver.OP_add) {
-					//若未成功添加app，说明屏数不够，需要添加一列新屏再添加app
-				}
+			}
+			if (done)	//	若已正确处理 packageName[p]，则退出这层
+				break;
+			else if (!done && op == AppInstallReceiver.OP_add) {
+				//若未成功添加app，说明屏数不够，需要添加一列新屏再添加app
+				AppsDeskManager.getInstance().addOneColAndApp(
+						mMaxPageX, packageNames[p]);
+				break;
 			}
 		}
 	}

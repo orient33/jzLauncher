@@ -133,6 +133,7 @@ public class CellLayout extends GridLayout{
 			findEmptyCell(screen, itemXY);
 //			DB.log("找到celllayout来添加cell , x="+x+", y="+y+"; cellx="+itemXY[0]+",celly="+itemXY[1]);
 			AppsDeskManager.addForPackage(this,packageName, screen, itemXY[0], itemXY[1]);
+			return true;
 		}
 		return false;
 	}
@@ -148,12 +149,12 @@ public class CellLayout extends GridLayout{
 	private void findEmptyCell(int screen, int[] xy){
 		int ii=0,jj=0;
 		String key="";
-		for (ii = 0; ii < AppsDeskManager.CELL_COUNT_X; ii++)
-			for (jj = 0; jj < AppsDeskManager.CELL_COUNT_Y; jj++) {
+		for (jj = 0; jj < AppsDeskManager.CELL_COUNT_Y; jj++)
+			for (ii = 0; ii < AppsDeskManager.CELL_COUNT_X; ii++) {
 				key = screen + "-" + ii + "-" + jj;
 				if (!mCells.containsKey(key)) {
-					xy[0] = jj;
-					xy[1] = ii;
+					xy[0] = ii;
+					xy[1] = jj;
 					return;
 				}
 			}

@@ -39,8 +39,8 @@ public class PagedViews extends GridLayout {
 
 	public static int mPageWidth, mPageHeight;
 	int mCurrentPageX = 0, mCurrentPageY = 0;
-	final int mMaxPageY;// row count 01234
-	int mMaxPageX = 0; // column count 01234
+	final int mMaxPageY;// row count 1234
+	int mMaxPageX = 0; // column count 1234
 	
 	public PagedViews(Context context) {
 		this(context, null);

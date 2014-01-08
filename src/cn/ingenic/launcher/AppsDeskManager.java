@@ -234,6 +234,30 @@ public class AppsDeskManager {
 	private void addShortcutToDb(ContentValues cv){
             mLauncher.mDB.insertToDB(cv);
 	}
+	/**添加app图标时，屏不够，需要先添加屏，再添加app图标
+	 * 在 work线程 调用
+	 * @param col 添加的屏的列 索引
+	 * @param packageName 添加的应用的包名
+	 * */
+	void addOneColAndApp(final int col,final String packageName){
+//		log("CellLayout不够,添加celllayout后再添加cell..col="+col);
+		final int screen = col;//
+		final Runnable addCell = new Runnable() {
+			public void run() {
+				int index=mWorkSpace.getChildCount()-mWorkSpace.mMaxPageY+AppScreenStartY;
+				CellLayout cl = (CellLayout) mWorkSpace.getChildAt(index);
+				addForPackage(cl, packageName, screen, 0, 0);
+			}
+		};
+		
+		final Runnable addCL = new Runnable() {
+			public void run() {
+				mWorkSpace.addOneColumn(col);
+				Launcher.runOnWorkThreak(addCell);
+			}
+		};
+		Launcher.runOnMainThreak(addCL);
+	}
 	
 	/**新安装 卸载了 更新了 应用
 	 * @param packageNames 卸载的应用的包名
@@ -251,7 +275,8 @@ public class AppsDeskManager {
 		}
 	}
 	/**检索出packageName为pn的信息，并结合screen,x,y组装成ItemInfo
-	 * 并封装成Cell，然后添加到对应屏;同时插入DB一条对应信息
+	 * 并封装成Cell，然后添加到对应屏;同时插入DB一条对应信息<br>
+	 * 在 work线程调用
 	 * @param pn 检索的包名
 	 * @param screen 可添加的screen
 	 * @param x 屏的横坐标 
